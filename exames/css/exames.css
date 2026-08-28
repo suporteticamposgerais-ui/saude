@@ -1,0 +1,129 @@
+/* =========================
+   BASE
+========================= */
+body {
+    background: linear-gradient(135deg, #eef2f7, #f8fafc);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* =========================
+   CONTAINER PRINCIPAL
+========================= */
+.container-exames {
+    max-width: 900px;
+    margin: 30px auto;
+}
+
+.card-exames {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    overflow: hidden;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+.card-exames .card-header {
+    background: linear-gradient(135deg, #0d6efd, #084298);
+    color: #fff;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* =========================
+   FORM
+========================= */
+.form-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 15px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
+}
+
+/* =========================
+   ALERTA / AVISO
+========================= */
+.alert-info-custom {
+    background: #e7f1ff;
+    border-left: 6px solid #0d6efd;
+    color: #084298;
+    border-radius: 10px;
+}
+
+/* =========================
+   DOCUMENTOS
+========================= */
+.doc-box {
+    border: 2px dashed #cbd5e1;
+    padding: 18px;
+    border-radius: 12px;
+    background: #f8fafc;
+    transition: all .2s ease;
+}
+
+.doc-box:hover {
+    border-color: #0d6efd;
+    background: #eef4ff;
+}
+
+.doc-box .form-control[type="file"] {
+    padding: 10px;
+}
+
+.doc-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =========================
+   BOTÕES
+========================= */
+.btn-primary {
+    border-radius: 12px;
+    padding: 14px;
+    font-weight: 600;
+}
+
+.btn-outline-primary {
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 600;
+}
+
+/* =========================
+   SEÇÃO DOCUMENTOS
+========================= */
+.section-title {
+    font-weight: 700;
+    color: #0d6efd;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* =========================
+   MOBILE AJUSTES
+========================= */
+@media (max-width: 576px) {
+    .card-exames .card-header {
+        font-size: 18px;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 16px;
+    }
+}
