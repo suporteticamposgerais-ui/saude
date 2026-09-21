@@ -1,4 +1,5 @@
 <?php
+session_start();
 require 'conexao.php';
 
 /************************************************
@@ -12,25 +13,126 @@ $telefone = '';
 $pedidos = [];
 $erro = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['telefone'])) {
-    $telefone = preg_replace('/\D/', '', $_POST['telefone']); // Remove caracteres não numéricos
-    
-    // Busca pedidos não finalizados do cidadão
-    $sql = "SELECT id, tipo, especialidade, nome_paciente, criado_em, status, 
-                   COALESCE(emergencia, 0) as emergencia, 
-                   COALESCE(prioridade, 2) as prioridade
-            FROM pedidos_exames 
-            WHERE telefone LIKE ? 
-            AND status != 'Finalizado'
-            ORDER BY especialidade, prioridade, criado_em";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(["%$telefone%"]);
-    $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    if (empty($pedidos)) {
-        $erro = 'Nenhum pedido em andamento encontrado para este telefone.';
+function normalizarComplexidade($valor) {
+    $valor = strtolower(trim((string) $valor));
+
+    if (in_array($valor, ['baixa', 'media', 'alta'], true)) {
+        return $valor;
     }
+
+    return 'baixa';
+}
+
+function categoriaPedido($categoria, $exame) {
+    $categoriaNormalizada = trim((string) $categoria);
+    $exameNormalizado = trim((string) $exame);
+
+    if ($categoriaNormalizada !== '') {
+        $categoriaLower = strtolower($categoriaNormalizada);
+        if (in_array($categoriaLower, ['consulta', 'exame'], true)) {
+            return ucfirst($categoriaLower);
+        }
+    }
+
+    if (stripos($exameNormalizado, 'consulta') !== false) {
+        return 'Consulta';
+    }
+
+    return 'Exame';
+}
+
+function especialidadePedido($pedido) {
+    $especialidade = trim((string) ($pedido['especialidade'] ?? ''));
+    if ($especialidade !== '') {
+        return $especialidade;
+    }
+
+    $exame = trim((string) ($pedido['exame_solicitado'] ?? ''));
+    return $exame !== '' ? $exame : 'Geral';
+}
+
+$loginAtivo = $_SESSION['login_tipo'] ?? null;
+$valorLoginSessao = $_SESSION['login_valor'] ?? ($_SESSION['telefone'] ?? '');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['telefone'])) {
+    $telefone = preg_replace('/\D/', '', $_POST['telefone']);
+    $telefone = substr($telefone, 0, 11);
+
+    if (strlen($telefone) !== 11 || preg_match('/^(\d)\1+$/', $telefone)) {
+        $erro = 'Informe um telefone válido com 11 dígitos.';
+    } else {
+        $sql = "SELECT id, COALESCE(complexidade) as complexidade, especialidade, exame_solicitado, nome_paciente, criado_em, status, 
+                       COALESCE(emergencia, 0) as emergencia, 
+                       COALESCE(prioridade, 2) as prioridade
+                FROM pedidos_exames 
+                WHERE telefone LIKE ? 
+                AND status != 'Finalizado'
+                ORDER BY especialidade, prioridade, criado_em";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(["%$telefone%"]);
+        $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($pedidos)) {
+            $erro = 'Nenhum pedido em andamento encontrado para este telefone.';
+        }
+    }
+} elseif ($loginAtivo || !empty($valorLoginSessao)) {
+    $tipoLogin = $loginAtivo ?? 'telefone';
+    $valorLogin = $valorLoginSessao;
+
+    if ($tipoLogin === 'telefone') {
+        $valorLogin = preg_replace('/\D/', '', $valorLogin);
+
+        $sql = "SELECT id, complexidade, especialidade, exame_solicitado, nome_paciente, criado_em, status,
+                       COALESCE(emergencia, 0) as emergencia,
+                       COALESCE(prioridade, 2) as prioridade
+                FROM pedidos_exames
+                WHERE telefone LIKE ?
+                AND status != 'Finalizado'
+                ORDER BY especialidade, prioridade, criado_em";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(["%$valorLogin%"]);
+        $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } elseif ($tipoLogin === 'email') {
+        $valorLogin = strtolower(trim($valorLogin));
+
+        $sql = "SELECT id, complexidade, especialidade, exame_solicitado, nome_paciente, criado_em, status,
+                       COALESCE(emergencia, 0) as emergencia,
+                       COALESCE(prioridade, 2) as prioridade
+                FROM pedidos_exames
+                WHERE email = ?
+                AND status != 'Finalizado'
+                ORDER BY especialidade, prioridade, criado_em";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$valorLogin]);
+        $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } else {
+        $valorLogin = preg_replace('/\D/', '', $valorLogin);
+
+        $sql = "SELECT id, complexidade, especialidade, exame_solicitado, nome_paciente, criado_em, status,
+                       COALESCE(emergencia, 0) as emergencia,
+                       COALESCE(prioridade, 2) as prioridade
+                FROM pedidos_exames
+                WHERE cartao_sus = ?
+                AND status != 'Finalizado'
+                ORDER BY especialidade, prioridade, criado_em";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$valorLogin]);
+        $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    if (empty($pedidos)) {
+        $erro = 'Nenhum pedido em andamento encontrado para os dados do login atual.';
+    }
+} elseif (empty($_POST['telefone'])) {
+    header('Location: login.php');
+    exit;
 }
 
 /**
@@ -54,12 +156,15 @@ function anonimizarNome($nome) {
  * Busca posição na fila para uma especialidade específica
  * Prioriza: 1) Emergências, 2) Status, 3) Data de criação
  */
-function obterFilaEspecialidade($pdo, $especialidade, $meuId) {
-    $sql = "SELECT id, nome_paciente, criado_em, status,
+function obterFilaEspecialidade($pdo, $especialidade, $meuId, $exameSolicitado = '') {
+    $valorBusca = trim((string) $especialidade);
+    $valorExame = trim((string) $exameSolicitado);
+
+    $sql = "SELECT id, nome_paciente, criado_em, status, exame_solicitado,
                    COALESCE(emergencia, 0) as emergencia,
                    COALESCE(prioridade, 2) as prioridade
             FROM pedidos_exames 
-            WHERE especialidade = ? 
+            WHERE (especialidade = ? OR exame_solicitado = ?)
             AND status != 'Finalizado'
             ORDER BY 
                 prioridade ASC,
@@ -69,9 +174,9 @@ function obterFilaEspecialidade($pdo, $especialidade, $meuId) {
                     WHEN 'Solicitação recebida' THEN 3
                 END,
                 criado_em ASC";
-    
+
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$especialidade]);
+    $stmt->execute([$valorBusca, $valorExame]);
     $fila = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     $posicao = 0;
@@ -444,6 +549,9 @@ function obterFilaEspecialidade($pdo, $especialidade, $meuId) {
                         name="telefone" 
                         placeholder="(00) 00000-0000"
                         value="<?= htmlspecialchars($telefone) ?>"
+                        maxlength="15"
+                        inputmode="numeric"
+                        pattern="[0-9()\-\s]*"
                         required
                     >
                 </div>
@@ -458,17 +566,19 @@ function obterFilaEspecialidade($pdo, $especialidade, $meuId) {
         <?php endif; ?>
         
         <?php foreach ($pedidos as $pedido): ?>
-            <?php 
-                $dados = obterFilaEspecialidade($pdo, $pedido['especialidade'], $pedido['id']);
+            <?php
+                $pedidoCategoria = categoriaPedido($pedido['complexidade'] ?? '', $pedido['exame_solicitado'] ?? '');
+                $pedidoEspecialidade = especialidadePedido($pedido);
+                $dados = obterFilaEspecialidade($pdo, $pedidoEspecialidade, $pedido['id'], $pedido['exame_solicitado'] ?? '');
             ?>
             
             <div class="pedido-card">
                 <div class="pedido-header">
                     <div class="pedido-titulo">
-                        <?= htmlspecialchars($pedido['especialidade']) ?>
+                        <?= htmlspecialchars($pedidoEspecialidade) ?>
                     </div>
-                    <span class="badge badge-<?= strtolower($pedido['tipo']) ?>">
-                        <?= htmlspecialchars($pedido['tipo']) ?>
+                    <span class="badge badge-<?= strtolower($pedidoCategoria) ?>">
+                        <?= htmlspecialchars($pedidoCategoria) ?>
                     </span>
                 </div>
                 
@@ -533,16 +643,31 @@ function obterFilaEspecialidade($pdo, $especialidade, $meuId) {
     </div>
     
     <script>
-        // Máscara de telefone
-        document.getElementById('telefone').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            
+        const inputTelefoneFila = document.getElementById('telefone');
+
+        function telefoneValidoFila(valor) {
+            const numero = valor.replace(/\D/g, '');
+            return numero.length === 11 && !/^(\d)\1+$/.test(numero);
+        }
+
+        inputTelefoneFila.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '').slice(0, 11);
+
             if (value.length <= 11) {
                 value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
                 value = value.replace(/(\d)(\d{4})$/, '$1-$2');
             }
-            
+
             e.target.value = value;
+        });
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const valor = inputTelefoneFila.value;
+            if (!telefoneValidoFila(valor)) {
+                event.preventDefault();
+                alert('Informe um telefone válido com 11 números.');
+                inputTelefoneFila.focus();
+            }
         });
     </script>
 </body>

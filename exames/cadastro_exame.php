@@ -21,6 +21,27 @@ function telefoneValido($tel) {
     return true;
 }
 
+function gerarProtocoloPedido(PDO $pdo): string {
+    $ano = (int) date('Y');
+    $prefixo = 'SAU';
+
+    $stmt = $pdo->prepare("SELECT ultimo_numero FROM protocolo_controle WHERE ano = ? FOR UPDATE");
+    $stmt->execute([$ano]);
+    $registro = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($registro) {
+        $numero = (int) $registro['ultimo_numero'] + 1;
+        $update = $pdo->prepare("UPDATE protocolo_controle SET ultimo_numero = ? WHERE ano = ?");
+        $update->execute([$numero, $ano]);
+    } else {
+        $numero = 1;
+        $insert = $pdo->prepare("INSERT INTO protocolo_controle (ano, ultimo_numero) VALUES (?, ?)");
+        $insert->execute([$ano, $numero]);
+    }
+
+    return sprintf('%s-%d-%s', $prefixo, $ano, str_pad((string) $numero, 6, '0', STR_PAD_LEFT));
+}
+
 // Recebe dados
 $nome   = trim($_POST['nome_paciente'] ?? '');
 $cns    = trim($_POST['cartao_sus'] ?? '');
@@ -28,12 +49,29 @@ $rua    = trim($_POST['rua'] ?? '');
 $numero = trim($_POST['numero'] ?? '');
 $bairro = trim($_POST['bairro'] ?? '');
 $email  = trim($_POST['email'] ?? '');
-$exame  = trim($_POST['exame_solicitado'] ?? '');
-$obs    = $_POST['observacoes'] ?? null;
-// $tel    = trim($_POST['telefone'] ?? '');
-$tel = preg_replace('/\D/', '', $_POST['telefone']);
+$exame_solicitado = trim($_POST['exame_solicitado'] ?? '');
+$exame_solicitado = preg_replace('/\s+/', ' ', $exame_solicitado);
 
-$tipo   = $_POST['tipo'] ?? '';
+$tipoPedido = '';
+$exame = $exame_solicitado;
+$especialidade = '';
+
+if (preg_match('/^(Consulta|Exame)\s*[-–]\s*(.+)$/i', $exame_solicitado, $m)) {
+    $tipoPedido = ucfirst(strtolower($m[1]));
+    $especialidade = trim($m[2]);
+    $exame = $tipoPedido;
+} else {
+    if (stripos($exame_solicitado, 'Consulta') !== false) {
+        $tipoPedido = 'Consulta';
+    } elseif (stripos($exame_solicitado, 'Exame') !== false) {
+        $tipoPedido = 'Exame';
+    }
+}
+
+$obs    = $_POST['observacoes'] ?? null;
+$tel = preg_replace('/\D/', '', $_POST['telefone'] ?? '');
+
+$complexidade = $_POST['complexidade'] ?? '';
 
 // Validações
 $erros = [];
@@ -43,7 +81,7 @@ if (!$rua || !$numero || !$bairro) $erros[] = 'Rua, Número e Bairro são obriga
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $erros[] = 'E-mail inválido.';
 if (!$exame) $erros[] = 'Exame solicitado é obrigatório.';
 if (!telefoneValido($tel)) $erros[] = 'Telefone inválido.';
-if (!in_array($tipo, ['baixa', 'alta'])) $erros[] = 'Tipo de pedido inválido.';
+if (!in_array($complexidade, ['baixa', 'media', 'alta'])) $erros[] = 'Complexidade do pedido inválida.';
 
 if (!empty($erros)) {
     $msg = json_encode(implode("\n", $erros));
@@ -71,16 +109,32 @@ if (!empty($erros)) {
 
 // Inserção no banco
 try {
+
     $pdo->beginTransaction();
 
+    $protocolo = gerarProtocoloPedido($pdo);
+
     $stmt = $pdo->prepare("
-        INSERT INTO pedidos_exames
-        (nome_paciente, cartao_sus, telefone, email, rua, numero, bairro, exame_solicitado, observacoes, status, tipo, criado_em, robo)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(),?)
+    INSERT INTO pedidos_exames
+    (nome_paciente, cartao_sus, telefone, email, rua, numero, bairro, exame_solicitado, especialidade, observacoes, status, complexidade, protocolo, criado_em, robo)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)
     ");
 
     $stmt->execute([
-        $nome, $cns, $tel, $email, $rua, $numero, $bairro, $exame, $obs, 'Solicitação recebida', $tipo, '0'
+        $nome,
+        $cns,
+        $tel,
+        $email,
+        $rua,
+        $numero,
+        $bairro,
+        $exame_solicitado,
+        $especialidade,
+        $obs,
+        'Solicitação recebida',
+        $complexidade,
+        $protocolo,
+        '0'
     ]);
 
     $pedidoId = $pdo->lastInsertId();

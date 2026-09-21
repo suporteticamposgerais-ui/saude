@@ -1,15 +1,38 @@
 <?php
 
-
 require 'conexao.php';
 
+function normalizarCategoriaPedido($valor) {
+    $valor = trim((string) $valor);
+    $valor = preg_replace('/\s+/', ' ', $valor);
+    $valorLower = strtolower($valor);
+
+    if (stripos($valorLower, 'consulta') !== false) {
+        return 'Consulta';
+    }
+
+    if (stripos($valorLower, 'exame') !== false) {
+        return 'Exame';
+    }
+
+    return 'Outro';
+}
+
+function normalizarEspecialidade($valor) {
+    $valor = trim((string) $valor);
+    $valor = preg_replace('/\s+/', ' ', $valor);
+
+    if (preg_match('/^(Consulta|Exame)\s*[-–]\s*(.+)$/i', $valor, $m)) {
+        return trim($m[2]);
+    }
+
+    return $valor;
+}
 
 /************************************************
- * 2) listagem_ordens.php
- * - Lista apenas ID + título
- * - Clique expande conteúdo
- * - Visualizar: status = Visualizado / enviado_robo = 0
- * - Finalizar: status = Finalizado / enviado_robo = 0
+ * listagem_ordens.php
+ * - Lista os pedidos com filtro por categoria e especialidade/exame
+ * - Mantém o status do pedido e ação de emergência
  ************************************************/
 $totais = [
     'Solicitação recebida' => 0,
@@ -268,7 +291,7 @@ if (isset($_GET['desmarcar_emergencia'])) {
         }
 
         /* =============================
-   BADGES DE TIPO
+   BADGES DE CATEGORIA
 ============================= */
 
         .badge {
@@ -328,10 +351,13 @@ if (isset($_GET['desmarcar_emergencia'])) {
     <div class="filtro-box">
         <form method="GET">
 
-            <select name="tipo" id="filtroTipo">
-                <option value="">Tipo</option>
-                <option value="Consulta">Consulta</option>
-                <option value="Exame">Exame</option>
+            <select name="complexidade" id="filtroComplexidade">
+                <option value="">Unidade / Complexidade</option>
+                <option value="baixa">Secretaria de Saúde</option>
+                <option value="media">Policlínica</option>
+                <option value="consulta">Consulta</option>
+                <option value="exame">Exame</option>
+                <option value="outro">Outro</option>
             </select>
 
             <select name="especialidade" id="filtroEspecialidade">
@@ -456,14 +482,54 @@ if (isset($_GET['desmarcar_emergencia'])) {
         $params[] = "%" . $_GET['busca'] . "%";
     }
 
-    if (!empty($_GET['tipo'])) {
-        $where[] = "tipo = ?";
-        $params[] = $_GET['tipo'];
+    $complexidadeFiltro = $_GET['complexidade'] ?? '';
+    if (!empty($complexidadeFiltro)) {
+        $complexidadeFiltro = strtolower(trim($complexidadeFiltro));
+
+        if ($complexidadeFiltro === 'baixa' || $complexidadeFiltro === 'media') {
+            $where[] = "(LOWER(complexidade) = ? OR LOWER(complexidade) = ? OR LOWER(complexidade) = ?)";
+            $params[] = $complexidadeFiltro;
+            $params[] = ($complexidadeFiltro === 'media' ? 'alta' : 'baixa');
+            $params[] = ($complexidadeFiltro === 'media' ? 'media' : 'baixa');
+        } elseif ($complexidadeFiltro === 'consulta') {
+            $where[] = "(
+                LOWER(COALESCE(exame_solicitado, '')) LIKE 'consulta%'
+                OR LOWER(COALESCE(exame_solicitado, '')) LIKE '% consulta%'
+                OR LOWER(COALESCE(exame_solicitado, '')) LIKE '%consulta%'
+                OR LOWER(COALESCE(especialidade, '')) LIKE 'consulta%'
+                OR LOWER(COALESCE(especialidade, '')) LIKE '% consulta%'
+                OR LOWER(COALESCE(especialidade, '')) LIKE '%consulta%'
+            )";
+        } elseif ($complexidadeFiltro === 'exame') {
+            $where[] = "(
+                LOWER(COALESCE(exame_solicitado, '')) LIKE 'exame%'
+                OR LOWER(COALESCE(exame_solicitado, '')) LIKE '% exame%'
+                OR LOWER(COALESCE(exame_solicitado, '')) LIKE '%- exame%'
+                OR LOWER(COALESCE(exame_solicitado, '')) LIKE '%exame%'
+                OR LOWER(COALESCE(especialidade, '')) LIKE 'exame%'
+                OR LOWER(COALESCE(especialidade, '')) LIKE '% exame%'
+                OR LOWER(COALESCE(especialidade, '')) LIKE '%- exame%'
+                OR LOWER(COALESCE(especialidade, '')) LIKE '%exame%'
+            )";
+        } elseif ($complexidadeFiltro === 'outro') {
+            $where[] = "(
+                LOWER(COALESCE(exame_solicitado, '')) NOT LIKE 'consulta%'
+                AND LOWER(COALESCE(exame_solicitado, '')) NOT LIKE '% consulta%'
+                AND LOWER(COALESCE(exame_solicitado, '')) NOT LIKE '%consulta%'
+                AND LOWER(COALESCE(exame_solicitado, '')) NOT LIKE 'exame%'
+                AND LOWER(COALESCE(exame_solicitado, '')) NOT LIKE '% exame%'
+                AND LOWER(COALESCE(exame_solicitado, '')) NOT LIKE '%- exame%'
+                AND LOWER(COALESCE(exame_solicitado, '')) NOT LIKE '%exame%'
+            )";
+        }
     }
 
     if (!empty($_GET['especialidade'])) {
-        $where[] = "especialidade = ?";
-        $params[] = $_GET['especialidade'];
+        $especialidadeFiltro = strtolower(trim($_GET['especialidade']));
+        $where[] = "(LOWER(especialidade) = ? OR LOWER(exame_solicitado) = ? OR LOWER(exame_solicitado) LIKE ?)";
+        $params[] = $especialidadeFiltro;
+        $params[] = $especialidadeFiltro;
+        $params[] = '%' . $especialidadeFiltro . '%';
     }
 
     $sql = "SELECT * FROM pedidos_exames";
@@ -479,6 +545,8 @@ if (isset($_GET['desmarcar_emergencia'])) {
 
     while ($s = $stmt->fetch(PDO::FETCH_ASSOC)):
         $classe = "status-" . strtolower(str_replace(' ', '-', $s['status']));
+        $tipoPedido = normalizarTipoPedido($s['exame_solicitado'] ?? '');
+        $especialidadePedido = normalizarEspecialidade($s['especialidade'] ?? $s['exame_solicitado'] ?? '');
         ?>
         <div class="box <?= $classe ?>  ">
             <div class="header" onclick="toggle(<?= $s['id'] ?>)">
@@ -489,11 +557,11 @@ if (isset($_GET['desmarcar_emergencia'])) {
             <?php $endereco = $s['rua'] . " " . $s['numero'] . " " . $s['bairro']; ?>
 
             <div class="detalhes" id="det_<?= $s['id'] ?>">
-                <p><b>Tipo:</b>
-                    <?= htmlspecialchars($s['tipo']) ?>
+                <p><b>Categoria:</b>
+                    <?= htmlspecialchars($tipoPedido) ?>
                 </p>
                 <p><b>Especialidade:</b>
-                    <?= htmlspecialchars($s['especialidade']) ?>
+                    <?= htmlspecialchars($especialidadePedido ?: ($s['especialidade'] ?? '')) ?>
                 </p>
                 <p><b>Cartão do Sus:</b> <?= htmlspecialchars($s['cartao_sus']) ?></p>
                 <p><b>Exame:</b> <?= nl2br(htmlspecialchars($s['exame_solicitado'])) ?></p>

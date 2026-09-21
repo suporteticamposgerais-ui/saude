@@ -5,13 +5,27 @@
 session_start();
 require 'conexao.php';
 
-if (!isset($_SESSION['telefone'])) {
+if (!isset($_SESSION['login_tipo']) && !isset($_SESSION['telefone'])) {
     header('Location: login.php');
     exit;
 }
 
-$stmt = $pdo->prepare("SELECT * FROM pedidos_exames WHERE telefone = ? ORDER BY id DESC");
-$stmt->execute([$_SESSION['telefone']]);
+$tipoLogin = $_SESSION['login_tipo'] ?? 'telefone';
+$valorLogin = $_SESSION['login_valor'] ?? ($_SESSION['telefone'] ?? '');
+
+if ($tipoLogin === 'telefone') {
+    $valorLogin = preg_replace('/\D/', '', $valorLogin);
+    $campo = 'telefone';
+} elseif ($tipoLogin === 'email') {
+    $valorLogin = strtolower(trim($valorLogin));
+    $campo = 'email';
+} else {
+    $valorLogin = preg_replace('/\D/', '', $valorLogin);
+    $campo = 'cartao_sus';
+}
+
+$stmt = $pdo->prepare("SELECT * FROM pedidos_exames WHERE {$campo} = ? ORDER BY id DESC");
+$stmt->execute([$valorLogin]);
 $dados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Busca documentos
@@ -49,9 +63,41 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
             border-radius: 12px
         }
 
+        .titulo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
         h2 {
-            text-align: center;
-            color: #2a5298
+            text-align: left;
+            color: #2a5298;
+            margin: 0;
+            flex: 1;
+        }
+
+        .btn-fila {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #e8f5e9;
+            color: #175e2a;
+            border: 1px solid #a7f3d0;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            margin-left: auto;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .btn-fila:hover {
+            background: #d1fae5;
+            text-decoration: none;
         }
 
         .card {
@@ -177,8 +223,8 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
         <button class="btn-filtro" onclick="filtrar('baixa')">
             🟢 Secretaria de Saúde
         </button>
-        <button class="btn-filtro" onclick="filtrar('alta')">
-            🔴 Policlinica
+        <button class="btn-filtro" onclick="filtrar('media')">
+            🔴 Policlínica
         </button>
     </div>
 
@@ -192,9 +238,12 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
     </div>
 
     <div class="container">
-        <h2>Suas Solicitações</h2>
+        <div class="titulo-header">
+            <h2>Suas Solicitações</h2>
+            <a href="acompanhamento_fila.php" class="btn-fila">Acompanhe sua posição na lista de espera</a>
+        </div>
         <?php foreach ($dados as $d): ?>
-            <div class="card" data-tipo="<?= $d['tipo'] ?>">
+            <div class="card" data-complexidade="<?= strtolower($d['complexidade'] ?? 'baixa') ?>">
                 <strong><?= htmlspecialchars($d['nome_paciente']) ?></strong><br>
                 <small><?= htmlspecialchars($d['exame_solicitado']) ?></small><br><br>
                 <hr class="hr-fade-right">
@@ -252,16 +301,17 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
     </script>
 
     <script>
-        function filtrar(tipo) {
+        function filtrar(complexidade) {
             const cards = document.querySelectorAll('.card');
             const botoes = document.querySelectorAll('.btn-filtro');
 
             botoes.forEach(b => b.classList.remove('ativo'));
-
             event.target.classList.add('ativo');
 
             cards.forEach(card => {
-                if (tipo === 'todos' || card.dataset.tipo === tipo) {
+                const valor = (card.dataset.complexidade || 'baixa').toLowerCase();
+
+                if (complexidade === 'todos' || valor === complexidade) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';

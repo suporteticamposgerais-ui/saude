@@ -32,20 +32,66 @@
             border-radius: 12px;
         }
 
+        .action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 18px 0 24px;
+        }
+
+        .filtros {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 0;
+        }
+
         .btn-filtro {
             border: 1px solid #ccc;
-            padding: 8px 14px;
-            border-radius: 8px;
+            padding: 0 18px;
+            border-radius: 10px;
             background: #f8f9fa;
             cursor: pointer;
-            margin-right: 8px;
-            font-size: 14px;
+            font-size: 16px;
+            min-width: 200px;
+            height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
         }
 
         .btn-filtro.ativo {
             border-color: #0d6efd;
             background: #e7f1ff;
             font-weight: bold;
+        }
+
+        .btn-acompanhamento {
+            min-width: 200px;
+            height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #0d6efd;
+            border-radius: 10px;
+            background: #fff;
+            color: #0d6efd;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 0 18px;
+            white-space: nowrap;
+            margin-left: auto;
+        }
+
+        .btn-acompanhamento:hover {
+            background: #eef5ff;
+            text-decoration: none;
+            color: #0d6efd;
         }
 
         .section-title {
@@ -113,18 +159,22 @@
 
                 <form method="post" action="cadastro_exame.php" enctype="multipart/form-data">
 
-                    <div class="filtros container my-3">
-                        <input type="hidden" name="tipo" id="tipo">
+                    <div class="action-row">
+                        <div class="filtros">
+                            <input type="hidden" name="complexidade" id="complexidade">
 
-                        <button type="button" class="btn-filtro" data-ativo="🟢 Secretaria de Saúde"
-                            data-inativo="🔴 Secretaria de Saúde" onclick="selecionarTipo('baixa', this)">
-                            🔴 Secretaria de Saúde
-                        </button>
+                            <button type="button" class="btn-filtro" data-ativo="🟢 Secretaria de Saúde"
+                                data-inativo="🔴 Secretaria de Saúde" onclick="selecionarComplexidade('baixa', this)">
+                                🔴 Secretaria de Saúde
+                            </button>
 
-                        <button type="button" class="btn-filtro" data-ativo="🟢 Policlínica"
-                            data-inativo="🔴 Policlínica" onclick="selecionarTipo('alta', this)">
-                            🔴 Policlínica
-                        </button>
+                            <button type="button" class="btn-filtro" data-ativo="🟢 Policlínica"
+                                data-inativo="🔴 Policlínica" onclick="selecionarComplexidade('media', this)">
+                                🔴 Policlínica
+                            </button>
+                        </div>
+
+                        <a href="login.php" class="btn-acompanhamento">Acompanhar pedido</a>
                     </div>
                     <!-- Formulário completo escondido -->
                     <div id="formCompleto" style="display:none;">
@@ -138,7 +188,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Cartão SUS</label>
-                                <input class="form-control" type="text" name="cartao_sus" id="cartao_sus" required>
+                                <input class="form-control" type="text" name="cartao_sus" id="cartao_sus" maxlength="18" inputmode="numeric" pattern="[0-9\s]*" required>
                                 <div class="invalid-feedback">Cartão SUS inválido.</div>
                             </div>
                         </div>
@@ -170,7 +220,7 @@
                                     </span>
 
                                     <input class="form-control" type="text" name="telefone" id="telefone"
-                                        placeholder="(00) 00000-0000" required>
+                                        placeholder="(00) 00000-0000" maxlength="15" inputmode="numeric" pattern="[0-9()\-\s]*" required>
                                 </div>
                             </div>
 
@@ -212,64 +262,64 @@
                                     </optgroup>
 
                                     <optgroup label="Exames de Sangue">
-                                        <option>Hemograma completo</option>
-                                        <option>Glicemia de jejum</option>
-                                        <option>Hemoglobina glicada (HbA1c)</option>
-                                        <option>Colesterol total</option>
-                                        <option>HDL</option>
-                                        <option>LDL</option>
-                                        <option>Triglicerídeos</option>
-                                        <option>Ureia</option>
-                                        <option>Creatinina</option>
-                                        <option>TGO (AST)</option>
-                                        <option>TGP (ALT)</option>
-                                        <option>Ácido úrico</option>
-                                        <option>TSH</option>
-                                        <option>T4 Livre</option>
-                                        <option>PCR</option>
+                                        <option>Exame - Hemograma completo</option>
+                                        <option>Exame - Glicemia de jejum</option>
+                                        <option>Exame - Hemoglobina glicada (HbA1c)</option>
+                                        <option>Exame - Colesterol total</option>
+                                        <option>Exame - HDL</option>
+                                        <option>Exame - LDL</option>
+                                        <option>Exame - Triglicerídeos</option>
+                                        <option>Exame - Ureia</option>
+                                        <option>Exame - Creatinina</option>
+                                        <option>Exame - TGO (AST)</option>
+                                        <option>Exame - TGP (ALT)</option>
+                                        <option>Exame - Ácido úrico</option>
+                                        <option>Exame - TSH</option>
+                                        <option>Exame - T4 Livre</option>
+                                        <option>Exame - PCR</option>
                                     </optgroup>
 
                                     <optgroup label="Exames de Urina">
-                                        <option>EAS (Urina tipo 1)</option>
-                                        <option>Urocultura</option>
-                                        <option>Microalbuminúria</option>
+                                        <option>Exame - EAS (Urina tipo 1)</option>
+                                        <option>Exame - Urocultura</option>
+                                        <option>Exame - Microalbuminúria</option>
                                     </optgroup>
 
                                     <optgroup label="Exames de Fezes">
-                                        <option>Parasitológico de fezes</option>
-                                        <option>Sangue oculto nas fezes</option>
+                                        <option>Exame - Parasitológico de fezes</option>
+                                        <option>Exame - Sangue oculto nas fezes</option>
                                     </optgroup>
 
                                     <optgroup label="Exames de Imagem">
-                                        <option>Raio-X</option>
-                                        <option>Ultrassonografia abdominal</option>
-                                        <option>Ultrassonografia pélvica</option>
-                                        <option>Ultrassonografia obstétrica</option>
-                                        <option>Ultrassonografia transvaginal</option>
-                                        <option>Mamografia</option>
+                                        <option>Exame - Raio-X</option>
+                                        <option>Exame - Ultrassonografia abdominal</option>
+                                        <option>Exame - Ultrassonografia pélvica</option>
+                                        <option>Exame - Ultrassonografia obstétrica</option>
+                                        <option>Exame - Ultrassonografia transvaginal</option>
+                                        <option>Exame - Mamografia</option>
                                     </optgroup>
 
                                     <optgroup label="Exames Cardiológicos">
-                                        <option>Eletrocardiograma (ECG)</option>
-                                        <option>Teste ergométrico</option>
-                                        <option>Holter 24h</option>
-                                        <option>MAPA 24h</option>
-                                        <option>Ecocardiograma</option>
+                                        <option>Exame - Eletrocardiograma (ECG)</option>
+                                        <option>Exame - Teste ergométrico</option>
+                                        <option>Exame - Holter 24h</option>
+                                        <option>Exame - MAPA 24h</option>
+                                        <option>Exame - Ecocardiograma</option>
                                     </optgroup>
 
                                     <optgroup label="Exames Preventivos">
-                                        <option>Papanicolau (Citologia oncótica)</option>
-                                        <option>PSA total</option>
-                                        <option>PSA livre</option>
+                                        <option>Exame - Papanicolau (Citologia oncótica)</option>
+                                        <option>Exame - PSA total</option>
+                                        <option>Exame - PSA livre</option>
                                     </optgroup>
 
                                     <optgroup label="Sorologias">
-                                        <option>HIV</option>
-                                        <option>Hepatite B</option>
-                                        <option>Hepatite C</option>
-                                        <option>VDRL (Sífilis)</option>
-                                        <option>Dengue</option>
-                                        <option>Toxoplasmose</option>
+                                        <option>Exame - HIV</option>
+                                        <option>Exame - Hepatite B</option>
+                                        <option>Exame - Hepatite C</option>
+                                        <option>Exame - VDRL (Sífilis)</option>
+                                        <option>Exame - Dengue</option>
+                                        <option>Exame - Toxoplasmose</option>
                                     </optgroup>
 
                                 </select>
@@ -309,59 +359,26 @@
         </div>
     </div>
     <script>
-        function selecionarTipo(valor, botao) {
-            // Atualiza o hidden input
-            document.getElementById('tipo').value = valor;
+        function selecionarComplexidade(valor, botao) {
+            document.getElementById('complexidade').value = valor;
 
-            // Remove estado ativo de todos
             document.querySelectorAll('.btn-filtro').forEach(btn => {
                 btn.classList.remove('ativo');
                 btn.innerText = btn.dataset.inativo;
             });
 
-            // Ativa o botão clicado
             botao.classList.add('ativo');
             botao.innerText = botao.dataset.ativo;
 
-            // Mostra o restante do formulário
             document.getElementById('formCompleto').style.display = 'block';
         }
 
-        // Bloqueia submit se tipo não selecionado
         document.querySelector('form').addEventListener('submit', function (e) {
-            const tipo = document.getElementById('tipo').value;
-            if (!tipo) {
+            const complexidade = document.getElementById('complexidade').value;
+            if (!complexidade) {
                 e.preventDefault();
-                alert('❌ Selecione o tipo de pedido antes de enviar o formulário.');
+                alert('❌ Selecione a complexidade antes de enviar o formulário.');
                 return false;
-            }
-        });
-    </script>
-    <script>
-        function selecionarTipo(valor, botao) {
-            // Atualiza o hidden input
-            document.getElementById('tipo').value = valor;
-
-            // Remove estado ativo de todos os botões
-            document.querySelectorAll('.btn-filtro').forEach(b => {
-                b.classList.remove('ativo');
-                b.innerText = b.dataset.inativo;
-            });
-
-            // Ativa o botão clicado
-            botao.classList.add('ativo');
-            botao.innerText = botao.dataset.ativo;
-
-            // Mostra o restante do formulário
-            document.getElementById('formCompleto').style.display = 'block';
-        }
-
-        // Bloqueia envio do formulário se tipo não selecionado
-        document.querySelector('form').addEventListener('submit', function (e) {
-            const tipo = document.getElementById('tipo').value;
-            if (!tipo) {
-                e.preventDefault();
-                alert('❌ Selecione o tipo de pedido antes de enviar o formulário.');
             }
         });
     </script>
@@ -455,11 +472,6 @@
         form.addEventListener('submit', function (e) {
             let erros = [];
 
-            if (!validarCNS(cnsInput.value)) erros.push('Cartão SUS inválido.');
-            if (!emailInput.checkValidity()) erros.push('E-mail inválido.');
-            if (!telefoneValido(telInput.value)) erros.push('Telefone inválido ou vazio.');
-
-            // força validação final
             if (!validarCNS(cnsInput.value)) {
                 erros.push('Cartão SUS inválido.');
                 cnsInput.classList.add('is-invalid');
@@ -474,8 +486,6 @@
                 erros.push('Telefone inválido ou vazio.');
                 telInput.classList.add('is-invalid');
             }
-
-
 
             if (erros.length > 0) {
                 e.preventDefault();

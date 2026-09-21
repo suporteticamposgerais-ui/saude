@@ -38,9 +38,9 @@ try {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
         $ids[] = $row['id']; // ✅ adiciona ao array
-        $status   = trim($row['status']);
-        $telefone = preg_replace('/\D/', '', $row['telefone']);
-        $tipo     = trim($row['tipo']); // ← AQUI
+        $status      = trim($row['status']);
+        $telefone    = preg_replace('/\D/', '', $row['telefone']);
+        $complexidade = trim($row['complexidade'] ?? 'baixa');
 
         $nome  = trim($row['nome_paciente']);
         $exame = trim($row['exame_solicitado']);
@@ -70,10 +70,10 @@ try {
         $msg .= " Obrigado.";
 
         /*
-      FORMATO FINAL
-      status-tipo-telefone-mensagem-
-    */
-        echo "{$status}-{$telefone}-{$msg}-{$tipo}-";
+          FORMATO FINAL
+          status-complexidade-telefone-mensagem-
+        */
+        echo "{$status}-{$complexidade}-{$telefone}-{$msg}-";
     }
 
 
