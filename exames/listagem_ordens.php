@@ -545,7 +545,7 @@ if (isset($_GET['desmarcar_emergencia'])) {
 
     while ($s = $stmt->fetch(PDO::FETCH_ASSOC)):
         $classe = "status-" . strtolower(str_replace(' ', '-', $s['status']));
-        $tipoPedido = normalizarTipoPedido($s['exame_solicitado'] ?? '');
+        $tipoPedido = normalizarCategoriaPedido($s['exame_solicitado'] ?? '');
         $especialidadePedido = normalizarEspecialidade($s['especialidade'] ?? $s['exame_solicitado'] ?? '');
         ?>
         <div class="box <?= $classe ?>  ">
