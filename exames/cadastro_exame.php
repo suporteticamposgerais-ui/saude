@@ -144,8 +144,19 @@ try {
     foreach ($_FILES['documentos']['tmp_name'] as $i => $tmp) {
         if ($_FILES['documentos']['error'][$i] === 0) {
             $ext = strtolower(pathinfo($_FILES['documentos']['name'][$i], PATHINFO_EXTENSION));
-            $permitidos = ['pdf', 'jpg', 'jpeg', 'png'];
-            if (!in_array($ext, $permitidos)) throw new Exception('Arquivo não permitido: ' . $_FILES['documentos']['name'][$i]);
+            $permitidos = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
+            $mimePermitidos = [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ];
+
+            $mimeTipo = mime_content_type($tmp) ?: '';
+            if (!in_array($ext, $permitidos) && !in_array($mimeTipo, $mimePermitidos)) {
+                throw new Exception('Arquivo não permitido: ' . $_FILES['documentos']['name'][$i]);
+            }
 
             $nomeArquivo = uniqid() . ".$ext";
             move_uploaded_file($tmp, "$pasta/$nomeArquivo");

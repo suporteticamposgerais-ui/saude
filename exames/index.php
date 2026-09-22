@@ -12,10 +12,11 @@
         .card-exames .card-header {
             background: linear-gradient(135deg, #0d6efd, #084298);
             color: #fff;
-            padding: 20px;
-            font-size: 20px;
+            padding: 18px 20px;
+            font-size: 21px;
             font-weight: 600;
             text-align: center;
+            border-radius: 0;
         }
 
         body {
@@ -24,44 +25,60 @@
         }
 
         .container {
-            max-width: 850px;
+            max-width: 1000px;
             margin: 30px auto;
         }
 
         .card {
-            border-radius: 12px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #dfe4ea;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .card-body {
+            padding: 12px 18px 20px;
+            background: #f5f5f5;
         }
 
         .action-row {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin: 18px 0 24px;
+            justify-content: center;
+            gap: 10px;
+            margin: 12px 0 18px;
+            width: 100%;
         }
 
         .filtros {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: nowrap;
             margin: 0;
+            width: 100%;
+            max-width: 700px;
         }
 
         .btn-filtro {
-            border: 1px solid #ccc;
+            border: 1px solid #cfcfcf;
             padding: 0 18px;
-            border-radius: 10px;
+            border-radius: 12px;
             background: #f8f9fa;
             cursor: pointer;
-            font-size: 16px;
-            min-width: 200px;
-            height: 48px;
+            font-size: 17px;
+            width: 100%;
+            max-width: 260px;
+            height: 52px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             white-space: nowrap;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+            color: #282828;
         }
 
         .btn-filtro.ativo {
@@ -94,6 +111,33 @@
             color: #0d6efd;
         }
 
+        .acompanhamento-link {
+            font-size: 15px;
+            color: #2d2d2d;
+            text-decoration: none;
+            line-height: 1.5;
+            display: block;
+            text-align: center;
+            white-space: nowrap;
+            margin-left: 0;
+            margin-top: 2px;
+        }
+
+        .acompanhamento-link a {
+            color: #0d6efd;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        .form-control[type="file"] {
+            padding: 10px 12px;
+            line-height: 1.3;
+            min-height: 48px;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .section-title {
             font-weight: bold;
             color: #333;
@@ -104,39 +148,93 @@
             padding: 12px;
             border-radius: 8px;
             background: #f8fafc;
+            position: relative;
+        }
+
+        .doc-box-principal {
+            padding-top: 12px;
+        }
+
+        .doc-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 26px;
+            height: 26px;
+            border: none;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #444;
+            font-size: 18px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .doc-close:hover {
+            background: #f1c5c5;
+            color: #a11c1c;
+        }
+
+        .doc-info-box {
+            border: 1px solid #dfe8f7;
+            background: #f4f8ff;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin: 10px 0 18px;
+            color: #2a3d57;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4);
+        }
+
+        .doc-info-box strong {
+            color: #1b3964;
         }
 
         .doc-title {
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             display: block;
+            color: #2d2d2d;
+        }
+
+        .doc-action-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
         }
 
         .btn-add-doc {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #22c55e;
+            background: #19b25c;
             color: #fff;
-            font-size: 28px;
-            font-weight: bold;
             border: none;
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+            min-height: 42px;
+            box-shadow: 0 6px 16px rgba(25, 178, 92, 0.22);
             transition: transform .2s ease, box-shadow .2s ease;
+            flex-shrink: 0;
         }
 
         .btn-add-doc:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 28px rgba(34, 197, 94, 0.55);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(25, 178, 92, 0.28);
         }
 
         .btn-add-doc:active {
-            transform: scale(0.95);
+            transform: scale(0.98);
         }
     </style>
     <!-- Icone do Whats -->
@@ -151,10 +249,6 @@
                 Pedido de Exame
             </div>
             <div class="card-body">
-                <div class="alert alert-info-custom mb-4">
-                    📄 Anexe todos os documentos necessários (pedido médico, cartão SUS, RG, etc.)
-                </div>
-
                 <div id="alertaErro" class="alert alert-danger d-none"></div>
 
                 <form method="post" action="cadastro_exame.php" enctype="multipart/form-data">
@@ -174,7 +268,9 @@
                             </button>
                         </div>
 
-                        <a href="login.php" class="btn-acompanhamento">Acompanhar pedido</a>
+                        <div class="acompanhamento-link">
+                            Já realizou um pedido? <a href="login.php">clique aqui</a> para acompanhar seu pedido.
+                        </div>
                     </div>
                     <!-- Formulário completo escondido -->
                     <div id="formCompleto" style="display:none;">
@@ -335,18 +431,28 @@
 
                         <h5 class="section-title mt-4">Documentos</h5>
 
-                        <div id="docs">
-                            <div class="doc-box mb-3">
-                                <label class="doc-title">Título do documento</label>
-                                <input class="form-control mb-2" type="text" name="titulo_documento[]" required>
-                                <input class="form-control" type="file" name="documentos[]" required>
+                        <div class="doc-info-box">
+                            <div style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">
+                                Anexe os documentos necessários para o atendimento, como pedido médico, cartão SUS, RG ou outros comprovantes relacionados ao caso.
+                            </div>
+                            <div>
+                                <strong>Formatos permitidos:</strong> PDF, JPG, JPEG, PNG, DOC e DOCX. Outros formatos não serão aceitos.
                             </div>
                         </div>
 
-                        <button type="button" class="btn-add-doc" onclick="addDocumento()" title="Adicionar documento">
-                            +
-                        </button>
+                        <div id="docs">
+                            <div class="doc-box mb-3 doc-box-principal">
+                                <label class="doc-title">Título do documento</label>
+                                <input class="form-control mb-2" type="text" name="titulo_documento[]" required>
+                                <input class="form-control" type="file" name="documentos[]" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,application/pdf,image/jpeg,image/png,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+                            </div>
+                        </div>
 
+                        <div class="doc-action-bar">
+                            <button type="button" class="btn-add-doc" onclick="addDocumento()" title="Adicionar novo arquivo" aria-label="Adicionar novo arquivo">
+                                Adicionar novo arquivo
+                            </button>
+                        </div>
 
                         <button class="btn btn-primary w-100 mt-3">
                             Cadastrar Pedido
@@ -373,6 +479,41 @@
             document.getElementById('formCompleto').style.display = 'block';
         }
 
+        function ajustarMobile() {
+            const largura = window.innerWidth;
+            const filtros = document.querySelector('.filtros');
+            const acompanhamento = document.querySelector('.acompanhamento-link');
+            const actionRow = document.querySelector('.action-row');
+
+            if (filtros) {
+                filtros.style.display = 'flex';
+                filtros.style.gap = largura <= 767 ? '10px' : '12px';
+                filtros.style.width = '100%';
+                filtros.style.justifyContent = 'center';
+                filtros.style.flexWrap = largura <= 767 ? 'wrap' : 'nowrap';
+            }
+
+            if (acompanhamento) {
+                acompanhamento.style.display = 'block';
+                acompanhamento.style.marginLeft = '0';
+                acompanhamento.style.width = '100%';
+                acompanhamento.style.textAlign = 'center';
+                acompanhamento.style.fontSize = largura <= 767 ? '13px' : '14px';
+                acompanhamento.style.whiteSpace = largura <= 767 ? 'normal' : 'nowrap';
+            }
+
+            if (actionRow) {
+                actionRow.style.flexDirection = 'column';
+                actionRow.style.gap = '12px';
+                actionRow.style.marginBottom = largura <= 767 ? '16px' : '24px';
+                actionRow.style.justifyContent = 'center';
+                actionRow.style.alignItems = 'center';
+            }
+        }
+
+        window.addEventListener('resize', ajustarMobile);
+        window.addEventListener('load', ajustarMobile);
+
         document.querySelector('form').addEventListener('submit', function (e) {
             const complexidade = document.getElementById('complexidade').value;
             if (!complexidade) {
@@ -384,6 +525,34 @@
     </script>
 
     <script>
+        function validarDocumento(input) {
+            const tiposPermitidos = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
+            if (!input.files || !input.files.length) return true;
+
+            const nomeArquivo = input.files[0].name.toLowerCase();
+            const extensao = nomeArquivo.split('.').pop();
+
+            if (!tiposPermitidos.includes(extensao)) {
+                alert('Formato de arquivo inválido. Use PDF, JPG, JPEG, PNG, DOC ou DOCX.');
+                input.value = '';
+                return false;
+            }
+
+            return true;
+        }
+
+        function removerDocumento(elemento) {
+            if (!elemento) return;
+            const container = document.getElementById('docs');
+            const totalDocumentos = container.querySelectorAll('.doc-box').length;
+
+            if (container && totalDocumentos > 1) {
+                elemento.remove();
+            } else {
+                alert('É necessário manter ao menos um documento na solicitação.');
+            }
+        }
+
         function addDocumento() {
             const container = document.getElementById('docs');
 
@@ -391,13 +560,20 @@
             div.className = 'doc-box mb-3';
 
             div.innerHTML = `
+        <button type="button" class="doc-close" aria-label="Fechar documento" onclick="removerDocumento(this.closest('.doc-box'))">×</button>
         <label class="doc-title">Título do documento</label>
         <input class="form-control mb-2" type="text" name="titulo_documento[]" required>
-        <input class="form-control" type="file" name="documentos[]" required>
+        <input class="form-control" type="file" name="documentos[]" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,application/pdf,image/jpeg,image/png,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required onchange="validarDocumento(this)">
     `;
 
             container.appendChild(div);
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[name="documentos[]"]').forEach(input => {
+                input.addEventListener('change', () => validarDocumento(input));
+            });
+        });
     </script>
     <script>
         const form = document.querySelector('form');

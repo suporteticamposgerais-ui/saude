@@ -51,24 +51,43 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
     <style>
         body {
             font-family: Arial;
-            background: #f0f4f8;
-            margin: 0
+            background: #f4f6f8;
+            margin: 0;
         }
 
         .container {
-            max-width: 900px;
-            margin: 30px auto;
+            max-width: 980px;
+            margin: 24px auto 32px;
+            padding: 0 16px;
+        }
+
+        .content-wrap {
+            padding: 0 18px 20px;
+        }
+
+        .card-box {
             background: #fff;
-            padding: 25px;
-            border-radius: 12px
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #0d6efd, #084298);
+            color: #fff;
+            padding: 18px 20px;
+            font-size: 21px;
+            font-weight: 600;
+            text-align: center;
         }
 
         .titulo-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
             gap: 16px;
-            margin-bottom: 20px;
+            margin: 18px 0 16px;
         }
 
         h2 {
@@ -76,14 +95,16 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
             color: #2a5298;
             margin: 0;
             flex: 1;
+            font-size: 26px;
+            font-weight: 700;
         }
 
         .btn-fila {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 0 16px;
+            border-radius: 12px;
             background: #e8f5e9;
             color: #175e2a;
             border: 1px solid #a7f3d0;
@@ -93,6 +114,8 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
             margin-left: auto;
             font-size: 14px;
             line-height: 1.2;
+            min-height: 42px;
+            height: 42px;
         }
 
         .btn-fila:hover {
@@ -103,25 +126,25 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
         .card {
             border: 1px solid #e5e7eb;
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            background: #fff;
         }
 
         .status {
             font-weight: bold;
-            color: #065f46
+            color: #065f46;
+            display: inline-block;
+            margin-top: 10px;
         }
 
         small {
-            color: #555
+            color: #555;
         }
 
         a {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
             color: #2a5298;
-            text-decoration: none
+            text-decoration: none;
         }
 
         .btn-docs {
@@ -132,10 +155,18 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
             color: #fff;
             border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
         }
 
         .btn-docs:hover {
             background: #1e3c72;
+        }
+
+        .link-sair {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            font-weight: 600;
         }
 
         .modal {
@@ -186,20 +217,30 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
 
         .filtros {
             display: flex;
-            gap: 10px;
+            align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            gap: 12px;
+            margin: 18px auto 22px;
+            flex-wrap: nowrap;
+            width: 100%;
+            max-width: 700px;
         }
 
         .btn-filtro {
-            padding: 8px 14px;
-            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+            height: 52px;
+            padding: 0 18px;
+            border-radius: 12px;
             border: 1px solid #cbd5e1;
             background: #f8fafc;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             transition: .2s;
+            color: #2d2d2d;
+            font-weight: 500;
         }
 
         .btn-filtro:hover {
@@ -211,59 +252,130 @@ while ($doc = $stmtDocs->fetch(PDO::FETCH_ASSOC)) {
             color: #fff;
             border-color: #2a5298;
         }
+
+        @media (max-width: 767px) {
+            .container {
+                padding: 0 10px;
+                margin-top: 12px;
+            }
+
+            .content-wrap {
+                padding: 0 12px 14px;
+            }
+
+            .card-box {
+                border-radius: 10px;
+            }
+
+            .card-header {
+                padding: 16px 18px;
+                font-size: 18px;
+            }
+
+            .titulo-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 10px;
+                margin: 14px 0 12px;
+            }
+
+            h2 {
+                text-align: center;
+                font-size: 22px;
+                width: 100%;
+            }
+
+            .btn-fila {
+                width: 100%;
+                white-space: normal;
+                margin-left: 0;
+                font-size: 13px;
+                min-height: 40px;
+                height: 40px;
+            }
+
+            .filtros {
+                gap: 8px;
+                flex-wrap: wrap;
+                max-width: 100%;
+                margin: 12px auto 14px;
+            }
+
+            .btn-filtro {
+                min-width: 0;
+                width: calc(50% - 4px);
+                height: 44px;
+                font-size: 13px;
+                padding: 0 8px;
+            }
+
+            .card {
+                padding: 12px 10px;
+                margin-bottom: 12px;
+            }
+
+            .btn-docs {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
-  
-    <div class="filtros container">
-        <button class="btn-filtro ativo" onclick="filtrar('todos')">
-            Todos
-        </button>
-        <button class="btn-filtro" onclick="filtrar('baixa')">
-            🟢 Secretaria de Saúde
-        </button>
-        <button class="btn-filtro" onclick="filtrar('media')">
-            🔴 Policlínica
-        </button>
-    </div>
-
-    <!-- MODAL -->
-    <div class="modal" id="modalDocs">
-        <div class="modal-content">
-            <span class="close" onclick="fecharModal()">×</span>
-            <h3 id="modalTitulo"></h3>
-            <ul class="lista-docs" id="listaDocs"></ul>
-        </div>
-    </div>
-
     <div class="container">
-        <div class="titulo-header">
-            <h2>Suas Solicitações</h2>
-            <a href="acompanhamento_fila.php" class="btn-fila">Acompanhe sua posição na lista de espera</a>
-        </div>
-        <?php foreach ($dados as $d): ?>
-            <div class="card" data-complexidade="<?= strtolower($d['complexidade'] ?? 'baixa') ?>">
-                <strong><?= htmlspecialchars($d['nome_paciente']) ?></strong><br>
-                <small><?= htmlspecialchars($d['exame_solicitado']) ?></small><br><br>
-                <hr class="hr-fade-right">
-
-                📍 <?= htmlspecialchars($d['cartao_sus']) ?><br>
-                📞 <?= htmlspecialchars($d['telefone']) ?><br>
-
-                <span class="status">Status: <?= htmlspecialchars($d['status']) ?></span>
-                <br>
-                <hr>
-                <button class="btn-docs" onclick="abrirModal(<?= $d['id'] ?>)">
-                    📎 Ver documentos
-                </button>
-
+        <div class="card-box">
+            <div class="card-header">
+                Pedido de Exame
             </div>
 
+            <div class="filtros">
+                <button class="btn-filtro ativo" onclick="filtrar('todos')">
+                    Todos
+                </button>
+                <button class="btn-filtro" onclick="filtrar('baixa')">
+                    🟢 Secretaria de Saúde
+                </button>
+                <button class="btn-filtro" onclick="filtrar('media')">
+                    🔴 Policlínica
+                </button>
+            </div>
 
-        <?php endforeach; ?>
+            <div class="modal" id="modalDocs">
+                <div class="modal-content">
+                    <span class="close" onclick="fecharModal()">×</span>
+                    <h3 id="modalTitulo"></h3>
+                    <ul class="lista-docs" id="listaDocs"></ul>
+                </div>
+            </div>
 
-        <a href="logout.php">Sair</a>
+            <div class="content-wrap">
+                <div class="titulo-header">
+                    <h2>Suas Solicitações</h2>
+                    <a href="acompanhamento_fila.php" class="btn-fila">Acompanhe sua posição na lista de espera</a>
+                </div>
+
+                <?php foreach ($dados as $d): ?>
+                    <div class="card" data-complexidade="<?= strtolower($d['complexidade'] ?? 'baixa') ?>">
+                        <strong><?= htmlspecialchars($d['nome_paciente']) ?></strong><br>
+                        <small><?= htmlspecialchars($d['exame_solicitado']) ?></small><br><br>
+                        <hr class="hr-fade-right">
+
+                        📍 <?= htmlspecialchars($d['cartao_sus']) ?><br>
+                        📞 <?= htmlspecialchars($d['telefone']) ?><br>
+
+                        <span class="status">Status: <?= htmlspecialchars($d['status']) ?></span>
+                        <br>
+                        <hr>
+                        <button class="btn-docs" onclick="abrirModal(<?= $d['id'] ?>)">
+                            📎 Ver documentos
+                        </button>
+                    </div>
+                <?php endforeach; ?>
+
+                <a href="logout.php" class="link-sair">Sair</a>
+            </div>
+        </div>
     </div>
     <script>
         const documentos = <?= json_encode($docsPorPedido, JSON_UNESCAPED_UNICODE) ?>;
