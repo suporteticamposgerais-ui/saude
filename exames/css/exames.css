@@ -1,129 +1,97 @@
-/* =========================
-   BASE
-========================= */
 body {
-    background: linear-gradient(135deg, #eef2f7, #f8fafc);
-    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f8;
+    font-family: Arial, "Helvetica Neue", sans-serif;
+    margin: 0;
+    color: #2d3748;
 }
 
-/* =========================
-   CONTAINER PRINCIPAL
-========================= */
 .container-exames {
-    max-width: 900px;
-    margin: 30px auto;
+    max-width: 980px;
+    margin: 24px auto 32px;
+    padding: 0 16px;
 }
 
-.card-exames {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+.card-box {
+    background: #fff;
+    border: 1px solid #dfe4ea;
+    border-radius: 14px;
     overflow: hidden;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
 }
 
-/* =========================
-   CABEÇALHO
-========================= */
-.card-exames .card-header {
+.card-header-custom {
     background: linear-gradient(135deg, #0d6efd, #084298);
     color: #fff;
-    padding: 20px;
-    font-size: 20px;
+    padding: 18px 20px;
+    font-size: 21px;
     font-weight: 600;
     text-align: center;
 }
 
-/* =========================
-   FORM
-========================= */
 .form-label {
     font-weight: 600;
-    color: #333;
+    color: #2a3d57;
+    font-size: 14px;
+    margin-bottom: 6px;
 }
 
 .form-control,
 .form-select {
-    border-radius: 10px;
-    padding: 14px;
-    font-size: 15px;
+    border-radius: 8px;
+    padding: 11px 13px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
 }
 
 .form-control:focus,
 .form-select:focus {
     border-color: #0d6efd;
-    box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
 }
 
-/* =========================
-   ALERTA / AVISO
-========================= */
-.alert-info-custom {
-    background: #e7f1ff;
-    border-left: 6px solid #0d6efd;
-    color: #084298;
-    border-radius: 10px;
-}
-
-/* =========================
-   DOCUMENTOS
-========================= */
-.doc-box {
-    border: 2px dashed #cbd5e1;
-    padding: 18px;
-    border-radius: 12px;
-    background: #f8fafc;
-    transition: all .2s ease;
-}
-
-.doc-box:hover {
-    border-color: #0d6efd;
-    background: #eef4ff;
-}
-
-.doc-box .form-control[type="file"] {
-    padding: 10px;
-}
-
-.doc-title {
-    font-size: 14px;
-    font-weight: 600;
-}
-
-/* =========================
-   BOTÕES
-========================= */
-.btn-primary {
-    border-radius: 12px;
-    padding: 14px;
-    font-weight: 600;
-}
-
-.btn-outline-primary {
-    border-radius: 12px;
-    padding: 12px;
-    font-weight: 600;
-}
-
-/* =========================
-   SEÇÃO DOCUMENTOS
-========================= */
 .section-title {
     font-weight: 700;
-    color: #0d6efd;
+    color: #2a5298;
     margin-top: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-size: 16px;
 }
 
-/* =========================
-   MOBILE AJUSTES
-========================= */
-@media (max-width: 576px) {
-    .card-exames .card-header {
-        font-size: 18px;
-    }
-
-    .form-control,
-    .form-select {
-        font-size: 16px;
-    }
+.doc-box {
+    border: 1px dashed #cbd5e1;
+    padding: 14px;
+    border-radius: 8px;
+    background: #f8fafc;
+    position: relative;
 }
+
+.btn-primary {
+    background: #2a5298;
+    border-color: #2a5298;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #1e3c72;
+    border-color: #1e3c72;
+}
+
+.badge-status {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.st-aguardando_analise { background: #fef3c7; color: #92400e; }
+.st-aguardando_nova_analise { background: #dbeafe; color: #1d4ed8; }
+.st-em_espera { background: #fee2e2; color: #991b1b; }
+.st-aguardando_vaga { background: #e0f2fe; color: #075985; }
+.st-agendado { background: #dcfce7; color: #166534; }
+.st-em_andamento { background: #cffafe; color: #0e7490; }
+.st-realizado { background: #e0e7ff; color: #3730a3; }
+.st-finalizado { background: #f1f5f9; color: #475569; }
+.st-cancelado { background: #ffe4e6; color: #9f1239; }
