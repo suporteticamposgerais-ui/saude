@@ -14,6 +14,18 @@ $stmt->execute([$docId]);
 $doc = $stmt->fetch();
 if (!$doc) die('Documento não encontrado.');
 $redirect='paciente_perfil.php?id='.(int)$doc['paciente_id'];
+$filtrosPermitidos = ['busca', 'status', 'especialidade_id', 'exame_id', 'unidade_id'];
+$filtrosRetorno = [];
+$filtrosEnviados = $_POST['filtros_retorno'] ?? [];
+if (is_array($filtrosEnviados)) {
+    foreach ($filtrosPermitidos as $filtro) {
+        $valor = $filtrosEnviados[$filtro] ?? null;
+        if (is_scalar($valor) && trim((string)$valor) !== '') {
+            $filtrosRetorno[$filtro] = trim((string)$valor);
+        }
+    }
+}
+if ($filtrosRetorno) $redirect .= '&' . http_build_query($filtrosRetorno);
 try {
     if ($doc['status'] !== 'pendente') throw new RuntimeException('Somente documentos pendentes podem ser validados ou rejeitados.');
     $statusQuePermiteRejeicao = ['aguardando_analise', 'aguardando_nova_analise', 'em_espera', 'aguardando_vaga'];
@@ -38,8 +50,15 @@ try {
         registrarHistorico($pdo,(int)$doc['pedido_id'],$doc['pedido_status'],'em_espera','Documento rejeitado',$motivo,'admin',$admin['id'],$admin['nome']);
     } else { throw new RuntimeException('Ação de documento inválida.'); }
     $pdo->commit();
+    $_SESSION['flash_swal'] = $acao === 'validar'
+        ? ['icon' => 'success', 'title' => 'Documento aprovado']
+        : ['icon' => 'error', 'title' => 'Documento recusado'];
 } catch (Throwable $e) {
     if($pdo->inTransaction()) $pdo->rollBack();
-    $_SESSION['flash_erro']=$e->getMessage();
+    $_SESSION['flash_swal'] = [
+        'icon' => 'error',
+        'title' => 'Não foi possível atualizar o documento',
+        'text' => $e->getMessage(),
+    ];
 }
 header('Location: '.$redirect); exit;

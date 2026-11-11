@@ -2909,6 +2909,78 @@ body .pending-old {
     box-shadow: 0 0 0 0.2rem rgba(47, 128, 237, 0.16);
 }
 
+.filtro-card form > div,
+.filtro-prontuario form > div {
+    min-width: 0;
+}
+
+.filtro-card form > div:nth-of-type(1),
+.filtro-prontuario form > div:nth-of-type(1) {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+
+.filtro-card form > div:nth-of-type(2),
+.filtro-prontuario form > div:nth-of-type(2),
+.filtro-card form > div:nth-of-type(5),
+.filtro-prontuario form > div:nth-of-type(5) {
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+}
+
+.filtro-card form > div:nth-of-type(3),
+.filtro-prontuario form > div:nth-of-type(3) {
+    flex: 0 0 25%;
+    max-width: 25%;
+}
+
+.filtro-card form > div:nth-of-type(4),
+.filtro-prontuario form > div:nth-of-type(4) {
+    order: 5;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+}
+
+.filtro-card form > div:nth-of-type(5),
+.filtro-prontuario form > div:nth-of-type(5) {
+    order: 3;
+}
+
+.filtro-card form > div:nth-of-type(6),
+.filtro-prontuario form > div:nth-of-type(6) {
+    order: 4;
+    flex: 0 0 8.333333%;
+    max-width: 8.333333%;
+}
+
+.filtro-card form > div:nth-of-type(7),
+.filtro-prontuario form > div:nth-of-type(7) {
+    order: 6;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+}
+
+.filtro-card form .form-select,
+.filtro-prontuario form .form-select {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 767.98px) {
+    .filtro-card form > div:nth-of-type(n),
+    .filtro-prontuario form > div:nth-of-type(n) {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .filtro-card form > div:nth-of-type(7),
+    .filtro-prontuario form > div:nth-of-type(7) {
+        width: 100%;
+    }
+}
+
 .container-exames .btn-acompanhar {
     border-color: #D7E5F9 !important;
     background: #fff !important;

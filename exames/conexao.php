@@ -2,6 +2,8 @@
 // conexao.php
 declare(strict_types=1);
 
+date_default_timezone_set('America/Sao_Paulo');
+
 $host = getenv('DB_HOST') ?: 'localhost';
 $dbname = getenv('DB_NAME') ?: 'servicos';
 $user = getenv('DB_USER') ?: 'root';
@@ -22,6 +24,7 @@ try {
             PDO::ATTR_EMULATE_PREPARES   => false,
         ]
     );
+    $pdo->exec("SET time_zone = '-03:00'");
 } catch (PDOException $e) {
     error_log('Erro na conexão: ' . $e->getMessage());
     die('Erro ao conectar com o banco de dados. Verifique as credenciais no arquivo conexao.php.');
